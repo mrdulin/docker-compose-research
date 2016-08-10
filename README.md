@@ -7,3 +7,7 @@
 - `docker engine`: `18.03.0-ce`
 
 - `docker-compose`: `1.20.1`
+
+## 参考
+
+- https://codefresh.io/docker-tutorial/not-ignore-dockerignore/
