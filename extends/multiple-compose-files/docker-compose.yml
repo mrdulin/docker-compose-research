@@ -1,0 +1,17 @@
+version: '3.6'
+
+services: 
+  web:
+    image: getstarted_web:latest
+    depends_on: 
+      - redis
+    networks:
+      - docker-compose-research
+
+  redis:
+    image: redis:alpine
+    networks:
+      - docker-compose-research
+
+networks: 
+  docker-compose-research:

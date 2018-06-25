@@ -1,0 +1,10 @@
+version: '2'
+
+services:
+  webapp:
+    build: ../../get-started
+    ports: 
+      - 8000:5000
+    volumes:
+      - ../../get-started:/code
+    

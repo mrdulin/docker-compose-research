@@ -1,0 +1,16 @@
+version: "3.6"
+
+services:
+  web:
+    build: ../../get-started
+    volumes:
+      - ../../get-started:/code
+    ports:
+      - 8883:5000
+    environment:
+      DEBUG: 'true'
+
+
+  redis:
+    ports:
+      - 6379:6379
