@@ -1,0 +1,9 @@
+version: '3.6'
+
+services:
+  busybox:
+    image: busybox
+    command: 'printenv'
+    # command: 'echo $DEBUG'
+    env_file:
+      - some-variables.env
