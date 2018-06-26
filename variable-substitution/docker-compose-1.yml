@@ -4,4 +4,6 @@ services:
 
   busybox: 
     image: busybox:${BUSYBOX_VERSION}
+    # 或者
+    # image: busybox:$BUSYBOX_VERSION
     

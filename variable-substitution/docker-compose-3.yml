@@ -1,0 +1,11 @@
+version: '3.6'
+
+services: 
+
+  busybox: 
+    # 变量必须设置值，否则报错
+    # ERROR: Missing mandatory value for "image" option in service "busybox": err
+    # image: busybox:${BUSYBOX_VERSION:?err}
+    # 或者
+    image: busybox:${BUSYBOX_VERSION?err}
+    
