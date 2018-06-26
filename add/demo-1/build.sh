@@ -1,6 +1,6 @@
 #!/bin/sh
 
-IMAGE_NAME="add-demo"
+IMAGE_NAME="add-demo-1"
 
 docker container prune -f
 docker rmi ${IMAGE_NAME}
