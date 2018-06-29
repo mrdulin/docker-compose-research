@@ -483,6 +483,10 @@ pwjxzu80q1vx        getstartedlab_web          replicated          5/5          
 
 在浏览器中访问`http://<任意节点IP>:4000`，查看 Visits 显示的指，判断`redis`是否正常工作，访问`http://<任意节点IP>:8080`，可以查看各个 service 在不同 vm1 上运行的可视化数据
 
+## TODO
+
+https://docs.docker.com/get-started/part6/
+
 ## 错误
 
 ```bash
@@ -513,3 +517,5 @@ https://cloud.docker.com/swarm/novaline/dashboard/onboarding/cloud-registry
 https://docs.docker.com/docker-cloud/
 
 https://hub.docker.com/
+
+https://docs.docker.com/get-started/
