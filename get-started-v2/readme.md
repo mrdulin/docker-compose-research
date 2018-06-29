@@ -342,6 +342,147 @@ CONTAINER ID        IMAGE                        COMMAND             CREATED    
 
 #### 向 swarm 中再次添加一个 work node
 
+创建`myvm3`虚拟机:
+
+```bash
+☁  docker-research [master] docker-machine create -d virtualbox myvm3
+Running pre-create checks...
+Creating machine...
+(myvm3) Copying /Users/ldu020/.docker/machine/cache/boot2docker.iso to /Users/ldu020/.docker/machine/machines/myvm3/boot2docker.iso...
+(myvm3) Creating VirtualBox VM...
+(myvm3) Creating SSH key...
+(myvm3) Starting the VM...
+(myvm3) Check network to re-create if needed...
+(myvm3) Waiting for an IP...
+Waiting for machine to be running, this may take a few minutes...
+Detecting operating system of created instance...
+Waiting for SSH to be available...
+Detecting the provisioner...
+Provisioning with boot2docker...
+Copying certs to the local machine directory...
+Copying certs to the remote machine...
+Setting Docker configuration on the remote daemon...
+Checking connection to Docker...
+Docker is up and running!
+To see how to connect your Docker Client to the Docker Engine running on this virtual machine, run: docker-machine env myvm3
+```
+
+查看`machine`列表：
+
+```bash
+☁  docker-research [master] docker-machine ls
+NAME    ACTIVE   DRIVER       STATE     URL                         SWARM   DOCKER        ERRORS
+myvm1   *        virtualbox   Running   tcp://192.168.99.100:2376           v18.05.0-ce
+myvm2   -        virtualbox   Running   tcp://192.168.99.101:2376           v18.05.0-ce
+myvm3   -        virtualbox   Running   tcp://192.168.99.102:2376           v18.05.0-ce
+```
+
+查看`stack`列表：
+
+```bash
+☁  docker-research [master] ⚡  docker stack ls
+NAME                SERVICES
+getstartedlab       1
+```
+
+先在 swarm manager(myvm1)上获取`join-tokens`
+
+```bash
+☁  docker-research [master] ⚡  docker swarm join-token worker
+To add a worker to this swarm, run the following command:
+
+    docker swarm join --token SWMTKN-1-002x9ve85tv0jpodgd0y1244itb2knyr3b6j4qn6qiepl7yjx7-4p08k808lz9eqtqu1szdki3md 192.168.99.100:2377
+```
+
+将`myvm3`作为 worker node 加入`swarm`:
+
+```bash
+☁  docker-research [master] ⚡  docker-machine ssh myvm3 'docker swarm join --token SWMTKN-1-002x9ve85tv0jpodgd0y1244itb2knyr3b6j4qn6qiepl7yjx7-4p08k808lz9eqtqu1szdki3md 192.168.99.100:2377'
+This node joined a swarm as a worker.
+```
+
+查看 swarm nodes:
+
+```bash
+☁  docker-research [master] ⚡  docker node ls
+ID                            HOSTNAME            STATUS              AVAILABILITY        MANAGER STATUS      ENGINE VERSION
+qciplvmrh6j758hs8mi8jyqdz *   myvm1               Ready               Active              Leader              18.05.0-ce
+5xxrbayq0n0068awdctneyifg     myvm2               Ready               Active                                  18.05.0-ce
+gfuc93zs1k45evlhlxqfd2qo9     myvm3               Ready               Active                                  18.05.0-ce
+```
+
+重新部署:
+
+```bash
+☁  docker-research [master] ⚡  docker stack deploy getstartedlab -c ./get-started-v2/docker-compose.yml
+Updating service getstartedlab_web (id: pwjxzu80q1vxejc3d3hzoc89l)
+```
+
+### 清理
+
+`docker stack rm getstartedlab`
+
+### 重置 docker-machine shell 的环境变量
+
+```bash
+☁  docker-research [master] ⚡  docker-machine env -u
+unset DOCKER_TLS_VERIFY
+unset DOCKER_HOST
+unset DOCKER_CERT_PATH
+unset DOCKER_MACHINE_NAME
+# Run this command to configure your shell:
+# eval $(docker-machine env -u)
+```
+
+执行`eval $(docker-machine env -u)`
+
+### 添加一个新的 service 并重新部署
+
+首先添加了`visualizer` service
+
+```bash
+☁  docker-research [master] ⚡  docker stack deploy -c ./get-started-v2/docker-compose.yml getstartedlab
+Updating service getstartedlab_web (id: pwjxzu80q1vxejc3d3hzoc89l)
+Creating service getstartedlab_visualizer
+☁  docker-research [master] ⚡  docker-machine ls
+NAME    ACTIVE   DRIVER       STATE     URL                         SWARM   DOCKER        ERRORS
+myvm1   *        virtualbox   Running   tcp://192.168.99.100:2376           v18.05.0-ce
+myvm2   -        virtualbox   Running   tcp://192.168.99.101:2376           v18.05.0-ce
+myvm3   -        virtualbox   Running   tcp://192.168.99.102:2376           v18.05.0-ce
+```
+
+访问`http://<任意节点IP>:8080`
+
+然后在`docker-compose.yml`中添加`redis` service, 在`myvm1`上创建`redis`数据持久化的目录
+
+```bash
+☁  docker-research [master] ⚡  docker-machine ssh myvm1 "mkdir ./data"
+☁  docker-research [master] ⚡  docker-machine ssh myvm1 "ls"
+data
+log.log
+```
+
+重新部署：
+
+```bash
+☁  docker-research [master] ⚡  docker stack deploy -c ./get-started-v2/docker-compose.yml getstartedlab
+Creating service getstartedlab_redis
+Updating service getstartedlab_web (id: pwjxzu80q1vxejc3d3hzoc89l)
+Updating service getstartedlab_visualizer (id: fs9gcylfjvn72xlyv3hkc6ojx)
+```
+
+查看这三个 service 运行状态
+
+```bash
+☁  docker-research [master] ⚡  docker service ls
+ID                  NAME                       MODE                REPLICAS            IMAGE                             PORTS
+1z3x92z119m5        getstartedlab_redis        replicated          1/1                 redis:latest                      *:6379->6379/tcp
+fs9gcylfjvn7        getstartedlab_visualizer   replicated          1/1                 dockersamples/visualizer:stable   *:8080->8080/tcp
+pwjxzu80q1vx        getstartedlab_web          replicated          5/5                 novaline/get-started:part2        *:4000->80/tcp
+```
+
+在浏览器中访问`http://<任意节点IP>:4000`，查看 Visits 显示的指，判断`redis`是否正常工作，访问`http://<任意节点IP>:8080`，可以查看各个 service 在不同 vm1 上运行的可视化数据
+
 ## 错误
 
 ```bash
