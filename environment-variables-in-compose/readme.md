@@ -15,3 +15,5 @@ environmentvariablesincompose_busybox_1 exited with code 0
 ## 参考连接
 
 https://docs.docker.com/compose/environment-variables/
+
+https://stackoverflow.com/questions/51022134/docker-compose-cant-print-environment-variable-in-docker-container

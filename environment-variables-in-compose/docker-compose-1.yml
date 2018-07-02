@@ -3,9 +3,24 @@ version: '3.6'
 services:
   busybox:
     image: busybox
-    command: 'echo $$DEBUG'
-    # 对比上下两个命令的不同，一个$符号修饰的变量会被docker-compose当作外部传入的变量进行求值，而两个$符号修饰的变量不会被docker-compose求值
-    # 我这里是要在启动起来的docker container中通过echo命令打印传入到container中的变量的值，而不是在执行docker-compose命令时，对docker-compose.yml中的变量进行求值
+      
+    # 使用docker-compose -f docker-compose-1.yml up，容器运行后打印出的DEBUG是空
     # command: 'echo $DEBUG'
-    environment:
-      DEBUG: 123456
+    # environment:
+    #   DEBUG: 123
+
+    # DEBUG=123 docker-compose -f docker-compose-1.yml up，打印出的DEBUG是123
+    # command: 'echo $DEBUG'
+
+
+    # 一个$符号修饰的变量会被docker-compose当作外部传入的变量进行求值，而两个$符号修饰的变量不会被docker-compose求值
+    # 我这里是要在启动起来的docker container中通过echo命令打印传入到container中的变量的值，而不是在执行docker-compose命令时，对docker-compose.yml中的变量进行求值
+    # docker-compose -f docker-compose-1.yml up，打印出的DBEUG是123
+    # command: ['sh', '-c', 'echo $$DEBUG']
+    # 或者
+    # command: '/bin/sh -c "echo $$DEBUG"'
+    # environment: 
+    #   DEBUG: 123
+  
+    # DEBUG=123 docker-compose -f docker-compose-1.yml up，打印出的DEBUG值是123
+    command: ['sh', '-c', 'echo $DEBUG']
