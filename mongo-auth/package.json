@@ -1,0 +1,16 @@
+{
+  "name": "mongo-auth",
+  "version": "1.0.0",
+  "description": "## 启动 mongodb",
+  "main": "db.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node db.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "mongoose": "^5.2.5"
+  }
+}

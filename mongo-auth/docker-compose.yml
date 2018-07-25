@@ -1,0 +1,32 @@
+version: '3'
+
+services: 
+
+  mongoose: 
+    build: .
+    depends_on: 
+      - mongo
+    environment: 
+      - MONGO_HOST=mongo
+      - MONGO_PORT=27017
+    env_file: .env
+    networks: 
+      - mongo-auth
+    
+  mongo: 
+    image: aashreys/mongo-auth:latest
+    environment:
+      - AUTH=yes
+      - MONGODB_ADMIN_USER=${MONGODB_ADMIN_USER}
+      - MONGODB_ADMIN_PASS=${MONGODB_ADMIN_PASS}
+      - MONGODB_APPLICATION_DATABASE=${MONGODB_APPLICATION_DATABASE}
+      - MONGODB_APPLICATION_USER=${MONGODB_APPLICATION_USER}
+      - MONGODB_APPLICATION_PASS=${MONGODB_APPLICATION_PASS}
+    ports:
+      - 27017:27017
+    networks: 
+      - mongo-auth
+
+networks:
+  mongo-auth:
+    external: false
