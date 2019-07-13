@@ -1,13 +1,10 @@
-# docker research
+# docker examples
 
-## 环境
+## environments
 
-- `docker`: `Version 18.03.0-ce-mac60 (23751)`
+- `docker`: `Docker version 18.09.2, build 6247962`
+- `docker-compose`: `docker-compose version 1.23.2, build 1110ad01`
 
-- `docker engine`: `18.03.0-ce`
-
-- `docker-compose`: `1.20.1`
-
-## 参考
+## refereneces
 
 - https://codefresh.io/docker-tutorial/not-ignore-dockerignore/
